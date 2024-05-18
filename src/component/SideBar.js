@@ -1,88 +1,86 @@
 "use strict";
-import React from "react";
-import { api_key,fetchDataFromServer } from "./api";
-import {addEventOnElements} from "./Global";
+import React, { useState, useEffect } from "react";
+import "../App.css";
+import { api_key, fetchDataFromServer } from "./api";
+import { addEventOnElements } from "./Global";
 
-function SideBar()
-{
-   //fetch genres => format 변경
-   const genreList = {};
-   fetchDataFromServer(
+function SideBar() {
+  const [genreList, setGenreList] = useState({});
+
+  useEffect(() => {
+    fetchDataFromServer(
       `https://api.themoviedb.org/3/genre/movie/list?api_key=${api_key}`,
-      function({genres}) {
-         for(const {id, name} of genres){
-            genreList[id] = name;
-         }
-         genreLink();
+      function({ genres }) {
+        const genreMap = {};
+        for (const { id, name } of genres) {
+          genreMap[id] = name;
+        }
+        setGenreList(genreMap);
       }
-   );
-   const sidebarInner = document.createElement("div");
-   sidebarInner.classList.add("sidebar-inner");
- 
-   sidebarInner.innerHTML = `
-     <div class="sidebar-inner">
-       <div class="sidebar-list">
-         <p class="title">장르</p>
-       </div>
- 
-       <div class="sidebar-footer">
-         <a href="https://github.com/MVTI-MovieAndVideo-Recommender-Platform/FE.git" alt="MVTI가 궁금해요!"/>MVTI_Github</a>
- 
-         <br/>
-         <img
-           src="../src/asset/img/icon01.jpg"
-           alt="MVTI Logo"
-           width="130"
-           height="17"
-         />
-       </div>
-     </div>
-   `;
- 
-   const genreLink = function () {
-     for (const [genreId, genreName] of Object.entries(genreList)) {
-       const link = document.createElement("a");
-       link.classList.add("sidebar-link");
-       link.setAttribute("href", "./MovieList.html");
-       link.setAttribute("menu-close", "");
-       link.setAttribute(
-         "onclick",
-         `getMovieList("with_genres=${genreId}", "${genreName}")`
-       );
-       link.textContent = genreName;
-       sidebarInner.querySelectorAll(".sidebar-list")[0].appendChild(link);
-     }
- 
-     const sidebar = document.querySelector("[sidebar]");
-     sidebar.appendChild(sidebarInner);
-     toggleSidebar(sidebar);
-   };
- 
-   const toggleSidebar = function (sidebar) {
-     //모바일 레이아웃 - toggle Sidebar
-     const sidebarBtn = document.querySelector("[menu-btn]");
-     const sidebarTogglers = document.querySelectorAll("[menu-toggler]");
-     const sidebarClose = document.querySelectorAll("[menu-close]");
-     const overlay = document.querySelector("[overlay]");
- 
-     addEventOnElements(sidebarTogglers, "click", function () {
-       sidebar.classList.toggle("active");
-       sidebarBtn.classList.toggle("active");
-       overlay.classList.toggle("active");
-     });
- 
-     addEventOnElements(sidebarClose, "click", function () {
-       sidebar.classList.remove("active");
-       sidebarBtn.classList.remove("active");
-       overlay.classList.remove("active");
-     });
-   };
+    );
+  }, []);
+
+  useEffect(() => {
+    const sidebar = document.querySelector("[sidebar]");
+    if (sidebar) {
+      const sidebarBtn = document.querySelector("[menu-btn]");
+      const sidebarTogglers = document.querySelectorAll("[menu-toggler]");
+      const sidebarClose = document.querySelectorAll("[menu-close]");
+      const overlay = document.querySelector("[overlay]");
+
+      addEventOnElements(sidebarTogglers, "click", function () {
+        sidebar.classList.toggle("active");
+        sidebarBtn.classList.toggle("active");
+        overlay.classList.toggle("active");
+      });
+
+      addEventOnElements(sidebarClose, "click", function () {
+        sidebar.classList.remove("active");
+        sidebarBtn.classList.remove("active");
+        overlay.classList.remove("active");
+      });
+    }
+  }, [genreList]); // genreList가 변경될 때마다 이벤트를 추가
+
+  return (
+    <aside className="App-sidebar" sidebar>
+      <nav>
+        <div className="sidebar-inner">
+          <div className="sidebar-list">
+            <p className="title">장르</p>
+            {Object.entries(genreList).map(([genreId, genreName]) => (
+              <a
+                key={genreId}
+                className="sidebar-link"
+                href="./MovieList.html"
+                menu-close=""
+                onClick={() =>
+                  window.getMovieList(`with_genres=${genreId}`, genreName)
+                }
+              >
+                {genreName}
+              </a>
+            ))}
+          </div>
+          <div className="sidebar-footer">
+            <a
+              href="https://github.com/MVTI-MovieAndVideo-Recommender-Platform/FE.git"
+              alt="MVTI가 궁금해요!"
+            >
+              MVTI_Github
+            </a>
+            <br />
+            <img
+              src="../src/asset/img/icon01.jpg"
+              alt="MVTI Logo"
+              width="130"
+              height="17"
+            />
+          </div>
+        </div>
+      </nav>
+    </aside>
+  );
 }
-//
-//   return (
-//   <article className="sidebar">
-//      {/*사이드바 컨텐츠 */}
-//   </article>
-//   );
-// }
- export default SideBar;
+
+export default SideBar;

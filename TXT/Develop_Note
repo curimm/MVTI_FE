@@ -1,4 +1,4 @@
-1.
+0517
 BrowserRouter 수정 및 각 페이지 이동 구현
 코드 수정:
 -index.js_기존 방식:페이지 이동 시 공통 컴포넌트가 매번 렌더링, 비효율적이었음. 
@@ -8,5 +8,11 @@ BrowserRouter 수정 및 각 페이지 이동 구현
 -index.js에서 root 없는경우 오류출력코드 추가
 
 
-
-2.레이아웃.js에서 헤더, 푸터, 사이드바 만들어서 각각 부르기!!
+0518
+-레이아웃.js 생성 및 관리
+   favicon,  헤더, 푸터, 사이드바 만들어서 각 페이지에서 랜더링
+   
+1. SideBar.js 수정
+기존 React-DOM에서 컴포넌트를 활용한 렌더링으로 변경 
+(addEventOnElements-DOM 조작 함수는 React의 useEffect와 같은 Hook을 사용
+useEffect를 사용해 genreList를 업데이트하고 이벤트를 추가하는 방식으로 변경
